@@ -24,14 +24,17 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
         break;
 
         case ADD:
+        printf("Addition operation performed ..! \n");
         *regA = *regA + *regB;
         break;
 
         case SUB:
+        printf("Substraction operation performed ..! \n");
         *regA = *regA - *regB;
         break;
 
         case MUL:
+        printf("Multiplication operation performed ..! \n");
         *regA = (*regA) * (*regB);
         break;
 
