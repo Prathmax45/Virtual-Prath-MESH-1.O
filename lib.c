@@ -103,6 +103,13 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
         }
         break;
 
+        case CMP :
+        if (*regA == *regB)
+            printf("Both are equal\n");
+        else
+            printf("They are not equal\n");
+        break;
+
         default:
          printf("Unknown instruction");
         exit(1);

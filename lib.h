@@ -17,6 +17,7 @@
 # define INP_B 10
 # define TRF 11
 # define RCV 12
+# define CMP 13
 
 void exe(int cnt,char opcode,int* regA , int* regB, int cpuid);
 
