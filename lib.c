@@ -12,8 +12,21 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
     {
         case HLT:
         printf("CPU%d: Halted\n", cpuid);
-        pthread_exit(NULL);  // Terminate only the current thread, not the whole program
-        break;;
+        if(cpuid == 1)
+        {
+            pthread_mutex_lock(&lock);
+            cpu_1_alive = 0;
+            ready = 1;
+            pthread_mutex_unlock(&lock);
+        }
+        if(cpuid == 2)
+        {
+            pthread_mutex_lock(&lock);
+            cpu_2_alive = 0;
+            ready = 2;
+            pthread_mutex_unlock(&lock);
+        }
+        return;
 
         case LA:
         *regA = memory[cnt++];
@@ -69,27 +82,31 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
             pthread_mutex_lock(&lock);
             common = *regA;
             ready = 1;
+            
             printf("Data transmitted from CPU%d = %d\n",cpuid,*regA);
-            pthread_mutex_unlock(&lock);
+            
+
         }
         else if(cpuid == 2)
         {
             pthread_mutex_lock(&lock);
             common = *regA;
-            ready = 1;
+            ready = 2;
+            
             printf("Data transmitted from CPU%d = %d\n",cpuid,*regA);
-            pthread_mutex_unlock(&lock);
+            
         }
-        break;
+        break ;
 
         case RCV :
         if(cpuid == 1)
         {
-            while(ready != 1);
+            while(ready != 2);
             pthread_mutex_lock(&lock);
             *regA = common;
             printf("Data received by CPU%d = %d\n",cpuid,*regA);
             ready = 0;
+            
             pthread_mutex_unlock(&lock);
         }
         else if(cpuid == 2)
@@ -109,6 +126,36 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
         else
             printf("They are not equal\n");
         break;
+
+        case PAU:
+        if (cpuid == 1)
+        {
+            printf("the cpu %d is paused\n",cpuid);
+            pthread_mutex_unlock(&lock);
+            while (ready!= 2);  
+            //     pthread_mutex_lock(&lock);    
+            if (ready == 2)
+            {
+                printf("The cpu %d is resumed!!\n", cpuid);
+                break;
+            }
+             break;
+        }
+        else if (cpuid == 2)
+        {
+            printf("the cpu %d is paused\n",cpuid);
+            pthread_mutex_unlock(&lock);
+            while (ready!= 1);    
+            if (ready == 1)
+            {
+                printf("The cpu %d is resumed!!\n", cpuid);
+                break;
+            }  
+             break;
+        }
+            
+            
+
 
         default:
          printf("Unknown instruction");

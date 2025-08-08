@@ -2,6 +2,7 @@
 #include "lib.h"
 #include "cpu.h"
 #include <stdlib.h>
+#include "shared_memory.h"
 int A2  = 0 , B2 = 0;
 int cnt_2 = 0;
 int cpu_id_2 = 2;
@@ -27,6 +28,9 @@ void cpu_2(char* filename)
 
     while (1)
     {
-        exe(cnt_2,memory_cpu_2[cnt_2++],&A2,&B2,cpu_id_2);
+        if (cpu_2_alive == 1)
+            exe(cnt_2,memory_cpu_2[cnt_2++],&A2,&B2,cpu_id_2);
+        else
+        return;
     }
 }

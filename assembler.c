@@ -33,6 +33,10 @@ char get_opcode (char *inst)        // loads the opcode of each specific instruc
         return 11;
     if(strcmp(inst ,"RCV") == 0)
         return 12;
+    if(strcmp(inst,"CMP") == 0)
+        return 13;
+    if(strcmp(inst,"PAU") == 0)
+        return 14;
 
     return none;
     

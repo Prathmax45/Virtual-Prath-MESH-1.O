@@ -18,6 +18,7 @@
 # define TRF 11
 # define RCV 12
 # define CMP 13
+# define PAU 14
 
 void exe(int cnt,char opcode,int* regA , int* regB, int cpuid);
 
