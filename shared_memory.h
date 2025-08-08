@@ -7,5 +7,6 @@
 extern int common;
 extern int ready;
 extern pthread_mutex_t lock;
-
+extern int cpu_1_alive;
+extern int cpu_2_alive;
 #endif
