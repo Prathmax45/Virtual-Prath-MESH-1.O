@@ -1,54 +1,44 @@
-#include "lib.h"
 #include <stdio.h>
 #include <pthread.h>
+#include "lib.h"
+#include "cpu.h"
 #include "shared_memory.h"
 
 char memory[MEMORY_SIZE];
 
-
-void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
+void exe (int cnt , char opcode , CPU * self)
 {
     switch(opcode)        
     {
         case HLT:
-        printf("CPU%d: Halted\n", cpuid);
-        if(cpuid == 1)
-        {
+        printf("CPU%d: Halted\n", self->cpuid);
             pthread_mutex_lock(&lock);
-            cpu_1_alive = 0;
-            ready = 1;
+            cpu_alive[self->cpuid - 1] = 0;
+            ready_bus[self->cpuid] = 1;
             pthread_mutex_unlock(&lock);
-        }
-        if(cpuid == 2)
-        {
-            pthread_mutex_lock(&lock);
-            cpu_2_alive = 0;
-            ready = 2;
-            pthread_mutex_unlock(&lock);
-        }
         return;
 
         case LA:
-        *regA = memory[cnt++];
+        self->data[0] = self->memory[cnt++];
         break;
 
         case LB:
-        *regB = memory[cnt++];
+        self->data[1] = self->memory[cnt++];
         break;
 
         case ADD:
         printf("Addition operation performed ..! \n");
-        *regA = *regA + *regB;
+        self->data[0] = self->data[0] + self->data[1];
         break;
 
         case SUB:
         printf("Substraction operation performed ..! \n");
-        *regA = *regA - *regB;
+        self->data[0] = self->data[0] - self->data[1];
         break;
 
         case MUL:
         printf("Multiplication operation performed ..! \n");
-        *regA = (*regA) * (*regB);
+        self->data[0] = self->data[0] * self->data[1];
         break;
 
         case JMP:
@@ -56,7 +46,7 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
         break;
 
         case JZ:
-        if(*regA == 1)
+        if(self->data[0] == 1)
             cnt = memory[cnt];
         else
             cnt++;
@@ -64,101 +54,59 @@ void exe (int cnt ,char opcode ,int* regA , int* regB,int cpuid)
 
         case INP_A:
         printf("Enter the A : ");
-        scanf("%d",regA);
+        scanf("%d",&self->data[0]);
         break;
 
         case INP_B:
         printf("Enter the B : ");
-        scanf("%d",regB);
+        scanf("%d",&self->data[1]);
         break;
 
         case PRN:
-        printf("Result : %d\n",*regA);
+        printf("Result : %d\n",self->data[0]);
         break;
 
         case TRF :
-        if(cpuid == 1)
-        {
-            pthread_mutex_lock(&lock);
-            common = *regA;
-            ready = 1;
-            
-            printf("Data transmitted from CPU%d = %d\n",cpuid,*regA);
-            
-
-        }
-        else if(cpuid == 2)
-        {
-            pthread_mutex_lock(&lock);
-            common = *regA;
-            ready = 2;
-            
-            printf("Data transmitted from CPU%d = %d\n",cpuid,*regA);
-            
-        }
+        printf("Transmitting Data from CPU%d\n",self->cpuid );
+        int id = self->memory[cnt++];
+        pthread_mutex_lock(&lock);
+        common = self->data[0];
+        ready_bus[id - 1] = 1;
+        ready_bus[self->cpuid - 1] = 0;
+        pthread_mutex_unlock(&lock);
+        printf("Data Transmitted from CPU%d\n",self->cpuid);
         break ;
 
         case RCV :
-        if(cpuid == 1)
-        {
-            while(ready != 2);
-            pthread_mutex_lock(&lock);
-            *regA = common;
-            printf("Data received by CPU%d = %d\n",cpuid,*regA);
-            ready = 0;
-            
-            pthread_mutex_unlock(&lock);
-        }
-        else if(cpuid == 2)
-        {
-            while(ready != 1);
-            pthread_mutex_lock(&lock);
-            *regA = common;
-            printf("Data received by CPU%d = %d\n",cpuid,*regA);
-            ready = 0;
-            pthread_mutex_unlock(&lock);
-        }
+        while(!(ready_bus[self->cpuid - 1]));
+        pthread_mutex_lock(&lock);
+        self->data[0] = common;
+        ready_bus[self->cpuid - 1] = 0;
+        pthread_mutex_unlock(&lock);
+        printf("Recieved Data by CPU%d\n",self->cpuid );
+        
         break;
 
+        case PAU:
+        printf("CPU%d is Paused\n",self->cpuid);
+        while(!(ready_bus[self->cpuid - 1]));
+        if ((ready_bus[self->cpuid - 1]))
+            {
+                printf("The cpu %d is resumed!!\n", self->cpuid);
+                break;
+            }  
+             break;
+
+
         case CMP :
-        if (*regA == *regB)
+        if (self->data[0] == self->data[1])
             printf("Both are equal\n");
         else
             printf("They are not equal\n");
         break;
 
-        case PAU:
-        if (cpuid == 1)
-        {
-            printf("the cpu %d is paused\n",cpuid);
-            pthread_mutex_unlock(&lock);
-            while (ready!= 2);  
-            //     pthread_mutex_lock(&lock);    
-            if (ready == 2)
-            {
-                printf("The cpu %d is resumed!!\n", cpuid);
-                break;
-            }
-             break;
-        }
-        else if (cpuid == 2)
-        {
-            printf("the cpu %d is paused\n",cpuid);
-            pthread_mutex_unlock(&lock);
-            while (ready!= 1);    
-            if (ready == 1)
-            {
-                printf("The cpu %d is resumed!!\n", cpuid);
-                break;
-            }  
-             break;
-        }
-            
-            
-
-
         default:
-         printf("Unknown instruction");
+        printf("Unknown instruction");
         exit(1);
         
 

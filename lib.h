@@ -1,8 +1,9 @@
 #ifndef LIB_H
 #define LIB_H
 
+#include "cpu.h"
 // memory size of 256 byte
-#define MEMORY_SIZE 256
+typedef struct CPU CPU;
 
 # define HLT 0      // operation definitions 
 # define LA  1       // predefinitons
@@ -19,8 +20,9 @@
 # define RCV 12
 # define CMP 13
 # define PAU 14
+# define CPY 15
 
-void exe(int cnt,char opcode,int* regA , int* regB, int cpuid);
+void exe (int cnt , char opcode , CPU * self);
 
 
 
