@@ -59,8 +59,13 @@ int main(int argc , char *argv[])
         line[strcspn(line,"\n\r")] = 0;
         if (strlen(line) == 0)
             continue;
+
+        char inst[Lmax];
+        int operand;
+
+        int flag = sscanf(line,"%s %d",inst,&operand); // stores the instruction and the constant value
         
-        char opcode = get_opcode(line);      // conversion to binary
+        char opcode = get_opcode(inst);      // conversion to binary
 
         if(opcode == none)
         {
@@ -70,7 +75,11 @@ int main(int argc , char *argv[])
 
         fwrite(&opcode ,sizeof(char), 1 ,output);  // writing in the output binary file
 
-
+        if (flag == 2)
+        {
+            char opbyte = (char)operand;
+            fwrite(&opbyte,sizeof(char), 1 ,output);
+        }
     }
     fclose(input);
     fclose(output);
