@@ -1,33 +1,33 @@
 #include <stdio.h>
 #include "lib.h"
 #include "cpu.h"
-#include <stdlib.h>
 #include "shared_memory.h"
+#include <stdlib.h>
 
-void cpu_2(char* filename)
+void cpu_3(char* filename)
 {
     CPU cpu;
     int cnt = 0;
-    cpu.cpuid = 2;
-    
-     FILE *file2 = fopen(filename,"rb");
-     if(!file2)
+    cpu.cpuid = 3;
+
+     FILE *file = fopen(filename,"rb");
+     if(!file)
      {
         printf("Unable to open the bin file");
         exit(0);
      }
 
     int i = 0;
-    while(!feof(file2) && i < MEMORY_SIZE)
+    while(!feof(file) && i < MEMORY_SIZE)
     {
-        fread(&cpu.memory[i], 1, 1, file2);
+        fread(&cpu.memory[i], 1, 1, file);
         i++;
     }
-    fclose(file2);
+    fclose(file);
 
     while (1)
     {
-        if (cpu_alive[1] == 1)
+        if (cpu_alive[2] == 1)
             exe(cnt , cpu.memory[cnt++], &cpu);
         else
             return;
