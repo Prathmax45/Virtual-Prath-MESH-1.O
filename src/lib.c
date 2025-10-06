@@ -1,33 +1,59 @@
 #include <stdio.h>
 #include <pthread.h>
-#include "lib.h"
-#include "cpu.h"
-#include "shared_memory.h"
+#include "../include/lib.h"
+#include "../include/cpu.h"
+#include "../include/shared_memory.h"
 
 char memory[MEMORY_SIZE];
 
-void exe (int cnt , char opcode , CPU * self)
+void exe (int* cnt , char opcode , CPU * self)
 {
     switch(opcode)        
     {
         case HLT:
         printf("CPU%d: Halted\n", self->cpuid);
             pthread_mutex_lock(&lock);
+            
             cpu_alive[self->cpuid - 1] = 0;
-            ready_bus[self->cpuid] = 1;
+            ready_bus[self->cpuid - 1] = 0;
+            int cnt_flag = 0;
+            int tmp_id = self->cpuid;
+            while ( tmp_id <= 10 && cnt_flag < 2)
+            {
+                if(cpu_alive[tmp_id] == 1)
+                {
+                    ready_bus[tmp_id] = 1;
+                    break;
+                }
+                else
+                {  
+                    (tmp_id)++;
+                    if (tmp_id == 10)
+                    {
+                        tmp_id = 1;
+                        cnt_flag++;
+                    }
+                }
+
+                
+        
+                
+
+            }
+            
             pthread_mutex_unlock(&lock);
-        return;
+        break;
 
         case LA:
-        self->data[0] = self->memory[cnt++];
+        self->data[0] = self->memory[(*cnt)++];
         break;
 
         case LB:
-        self->data[1] = self->memory[cnt++];
+        self->data[1] = self->memory[(*cnt)++];
         break;
 
         case ADD:
-        printf("Addition operation performed ..! \n");
+        printf("Addition operation performed..! \n");
         self->data[0] = self->data[0] + self->data[1];
         break;
 
@@ -42,14 +68,14 @@ void exe (int cnt , char opcode , CPU * self)
         break;
 
         case JMP:
-        cnt = memory[cnt];
+        *cnt = memory[(*cnt)];
         break;
 
         case JZ:
         if(self->data[0] == 1)
-            cnt = memory[cnt];
+            *cnt = memory[(*cnt)];
         else
-            cnt++;
+            (*cnt)++;
         break;
 
         case INP_A:
@@ -67,8 +93,8 @@ void exe (int cnt , char opcode , CPU * self)
         break;
 
         case TRF :
-        printf("Transmitting Data from CPU%d\n",self->cpuid );
-        int id = self->memory[cnt++];
+        printf("Transmitting Data from CPU%d\n",self->cpuid);
+        int id = self->memory[(*cnt)++];
         pthread_mutex_lock(&lock);
         common = self->data[0];
         ready_bus[id - 1] = 1;
@@ -84,7 +110,6 @@ void exe (int cnt , char opcode , CPU * self)
         ready_bus[self->cpuid - 1] = 0;
         pthread_mutex_unlock(&lock);
         printf("Recieved Data by CPU%d\n",self->cpuid );
-        
         break;
 
         case PAU:
@@ -92,10 +117,11 @@ void exe (int cnt , char opcode , CPU * self)
         while(!(ready_bus[self->cpuid - 1]));
         if ((ready_bus[self->cpuid - 1]))
             {
-                printf("The cpu %d is resumed!!\n", self->cpuid);
+                printf("The CPU%d is resumed!!\n", self->cpuid);
                 break;
             }  
-             break;
+        
+        break;
 
 
         case CMP :
@@ -105,10 +131,12 @@ void exe (int cnt , char opcode , CPU * self)
             printf("They are not equal\n");
         break;
 
-        default:
+        default:{
         printf("Unknown instruction");
-        exit(1);
+        exit(1);}
         
 
     }
 }
+
+

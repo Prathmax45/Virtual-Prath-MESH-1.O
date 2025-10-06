@@ -1,14 +1,15 @@
 #include <stdio.h>
-#include "lib.h"
-#include "cpu.h"
-#include "shared_memory.h"
 #include <stdlib.h>
+#include "../include/lib.h"
+#include "../include/cpu.h"
+#include "../include/shared_memory.h"
 
-void cpu_1(char* filename)
+
+void cpu_3(char* filename)
 {
     CPU cpu;
     int cnt = 0;
-    cpu.cpuid = 1;
+    cpu.cpuid = 3;
 
      FILE *file = fopen(filename,"rb");
      if(!file)
@@ -27,10 +28,9 @@ void cpu_1(char* filename)
 
     while (1)
     {
-        if (cpu_alive[0] == 1)
-            exe(cnt , cpu.memory[cnt++], &cpu);
+        if (cpu_alive[2] == 1)
+            exe(&cnt , cpu.memory[cnt++], &cpu);
         else
             return;
     }
 }
-

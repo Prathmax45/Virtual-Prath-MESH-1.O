@@ -22,7 +22,7 @@ typedef struct CPU CPU;
 # define PAU 14
 # define CPY 15
 
-void exe (int cnt , char opcode , CPU * self);
+void exe (int* cnt , char opcode , CPU * self);
 
 
 

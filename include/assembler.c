@@ -56,6 +56,7 @@ int main(int argc , char *argv[])
     char line[Lmax];
     while (fgets(line,sizeof(line),input))
     {
+    
         line[strcspn(line,"\n\r")] = 0;
         if (strlen(line) == 0)
             continue;
@@ -72,7 +73,7 @@ int main(int argc , char *argv[])
             printf("Invalid instruction : %s\n",line);
             continue;
         }
-
+        
         fwrite(&opcode ,sizeof(char), 1 ,output);  // writing in the output binary file
 
         if (flag == 2)

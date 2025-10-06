@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "lib.h"
-#include "cpu.h"
-#include "shared_memory.h"
+#include "../include/cpu.h"
+#include "../include/shared_memory.h"
 
 
 void* run_cpu1(void* arg)

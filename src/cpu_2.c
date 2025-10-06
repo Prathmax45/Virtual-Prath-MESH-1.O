@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "lib.h"
-#include "cpu.h"
 #include <stdlib.h>
-#include "shared_memory.h"
+#include "../include/lib.h"
+#include "../include/cpu.h"
+#include "../include/shared_memory.h"
 
 void cpu_2(char* filename)
 {
@@ -28,7 +28,7 @@ void cpu_2(char* filename)
     while (1)
     {
         if (cpu_alive[1] == 1)
-            exe(cnt , cpu.memory[cnt++], &cpu);
+            exe(&cnt , cpu.memory[cnt++], &cpu);
         else
             return;
     }

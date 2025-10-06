@@ -4,4 +4,6 @@ MUL
 PRN
 TRF 1
 PAU
+TRF 3
+PAU
 HLT

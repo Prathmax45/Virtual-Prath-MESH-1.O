@@ -1,4 +1,4 @@
-#include "shared_memory.h"
+#include "../include/shared_memory.h"
 
 int common = 0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
