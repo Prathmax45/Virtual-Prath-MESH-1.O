@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "../include/lib.h"
 #include "../include/cpu.h"
 #include "../include/shared_memory.h"
@@ -105,6 +106,7 @@ void exe (int* cnt , char opcode , CPU * self)
 
         case RCV :
         while(!(ready_bus[self->cpuid - 1]));
+        sleep(1);
         pthread_mutex_lock(&lock);
         self->data[0] = common;
         ready_bus[self->cpuid - 1] = 0;
