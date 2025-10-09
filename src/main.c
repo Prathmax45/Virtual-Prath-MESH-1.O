@@ -9,7 +9,7 @@ void* run_cpu1(void* arg)
     printf("CPU1_Entry , Live_State = %d\n" ,cpu_alive[0]);
 
     while (cpu_alive[0] != 0)
-        cpu_1("cpu_1.bin");
+        cpu_1("build/cpu_1.bin");
 
     printf("CPU1_returned, Live_State = %d\n", cpu_alive[0]);
 
@@ -20,7 +20,7 @@ void* run_cpu2(void* arg)
 {
     printf("CPU2_Entry , Live_State = %d\n", cpu_alive[1]);
     while(cpu_alive[1] != 0)
-        cpu_2("cpu_2.bin"); 
+        cpu_2("build/cpu_2.bin"); 
 
     printf("CPU2_returned, Live_State = %d\n", cpu_alive[1]);
     pthread_exit(NULL);
@@ -30,7 +30,7 @@ void* run_cpu3(void* arg)
 {
     printf("CPU3_Entry , Live_State = %d\n", cpu_alive[2]);
     while(cpu_alive[2] != 0)
-        cpu_3("cpu_3.bin"); 
+        cpu_3("build/cpu_3.bin"); 
 
     printf("CPU3_returned, Live_State = %d\n", cpu_alive[2]);
     pthread_exit(NULL);

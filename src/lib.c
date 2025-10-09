@@ -94,15 +94,15 @@ void exe (int* cnt , char opcode , CPU * self)
         break;
 
         case TRF :
-        printf("Transmitting Data from CPU%d\n",self->cpuid);
         int id = self->memory[(*cnt)++];
+        printf("Transmitting Data from CPU%d to CPU%d\n",self->cpuid,id);
         pthread_mutex_lock(&lock);
         common = self->data[0];
         ready_bus[id - 1] = 1;
         ready_bus[self->cpuid - 1] = 0;
         pthread_mutex_unlock(&lock);
-        printf("Data Transmitted from CPU%d\n",self->cpuid);
-        break ;
+        printf("Transferred Successfully !!\n");
+        break;
 
         case RCV :
         while(!(ready_bus[self->cpuid - 1]));
@@ -111,7 +111,7 @@ void exe (int* cnt , char opcode , CPU * self)
         self->data[0] = common;
         ready_bus[self->cpuid - 1] = 0;
         pthread_mutex_unlock(&lock);
-        printf("Recieved Data by CPU%d\n",self->cpuid );
+        printf("Data Recieved by CPU%d\n",self->cpuid );
         break;
 
         case PAU:
@@ -119,6 +119,7 @@ void exe (int* cnt , char opcode , CPU * self)
         while(!(ready_bus[self->cpuid - 1]));
         if ((ready_bus[self->cpuid - 1]))
             {
+                sleep(2);
                 printf("The CPU%d is resumed!!\n", self->cpuid);
                 break;
             }  
